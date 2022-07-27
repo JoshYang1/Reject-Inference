@@ -1,0 +1,18 @@
+Extrapolation results with different cut-off rates. Accept dataset had columns removed to match the application dataset.
+
+
+Rate:  20.229678836293896
+(Training Set) The cross-validation AUC for optimised Random Forest model after a 3 fold cross validation: 0.866 (0.001)
+(Test Set) The cross-validation AUC for optimised Random Forest model after a 3 fold cross validation: 0.864 (0.001)
+Rate:  30
+(Training Set) The cross-validation AUC for optimised Random Forest model after a 3 fold cross validation: 0.561 (0.001)
+(Test Set) The cross-validation AUC for optimised Random Forest model after a 3 fold cross validation: 0.560 (0.001)
+Rate:  40
+(Training Set) The cross-validation AUC for optimised Random Forest model after a 3 fold cross validation: 0.516 (0.000)
+(Test Set) The cross-validation AUC for optimised Random Forest model after a 3 fold cross validation: 0.515 (0.001)
+Rate:  50
+(Training Set) The cross-validation AUC for optimised Random Forest model after a 3 fold cross validation: 0.539 (0.000)
+(Test Set) The cross-validation AUC for optimised Random Forest model after a 3 fold cross validation: 0.539 (0.000)
+Rate:  60
+(Training Set) The cross-validation AUC for optimised Random Forest model after a 3 fold cross validation: 0.669 (0.000)
+(Test Set) The cross-validation AUC for optimised Random Forest model after a 3 fold cross validation: 0.670 (0.000)
