@@ -2,8 +2,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import itertools
-from sklearn.model_selection import GridSearchCV
+from pytest import param
+from sklearn.metrics import confusion_matrix, recall_score, roc_auc_score
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 import joblib
+from sklearn.preprocessing import StandardScaler
 
 def purposeCleaning(dataframe):
     df = dataframe.loc[dataframe['purpose'].isnull() == False]
@@ -83,18 +86,63 @@ def RandomForestTuning(model, X_train, y_train, filename, cv=10) :
             'n_estimators': [10, 50, 100, 200],
             'criterion': ["gini", "entropy"],
             'max_depth': [5,10,12,15,20],
-            'max_features': ["log2", "sqrt"],
-            'bootstrap':[True, False]
+            'max_features': ["log2", "sqrt"]
     }
 
-    grid_rf = GridSearchCV(estimator=model, param_grid=params_rf ,cv = cv, scoring="neg_mean_squared_error", verbose = 1, n_jobs=-1)
+    grid_rf = RandomizedSearchCV(estimator=model, param_distributions=params_rf ,cv = cv, scoring="neg_mean_squared_error", verbose = 1, n_jobs=-1)
     grid_rf.fit(X_train, y_train)
 
     best_hyperparams = grid_rf.best_params_
-    print("Best hyperparameters: \n", best_hyperparams )
     best_rf = grid_rf.best_estimator_
 
     # Saving the model
-
     joblib.dump(best_rf, filename)
     
+    return best_hyperparams, best_rf
+
+
+# def AcceptedLoansPreprocessing(train_df, numerical_cols, test_df):
+#     scaler = StandardScaler(copy=False)
+
+#     # dataset['issue_d'] = pd.to_datetime(dataset['issue_d'])
+
+#     # # Splitting dataset into train and test with newer instances 
+
+#     # train_df = dataset.loc[dataset['issue_d'] < dataset['issue_d'].quantile(0.8)]
+#     # test_df = dataset.loc[dataset['issue_d'] >= dataset['issue_d'].quantile(0.8)]
+
+#     # train_df = train_df.drop('issue_d', axis=1)
+#     # test_df = test_df.drop('issue_d', axis=1)
+
+#     train_df[numerical_cols] = train_df[numerical_cols].fillna(train_df[numerical_cols].mean())
+#     test_df[numerical_cols] = test_df[numerical_cols].fillna(test_df[numerical_cols].mean())
+
+#     train_df[numerical_cols] = scaler.fit_transform(train_df[numerical_cols], train_df['charged_off'])
+#     test_df[numerical_cols] = scaler.transform(test_df[numerical_cols])
+
+#     return train_df, test_df
+
+
+def AcceptedLoansSplit(train, test):
+    y_train = train['charged_off']
+    y_test = test['charged_off']
+
+    X_train = train.drop('charged_off', axis=1)
+    X_test = test.drop('charged_off', axis=1)
+
+    return X_train, y_train, X_test, y_test
+
+def AppendResults(df,title, AUC_scores, y_test, y_score) :
+
+    y_score_flag = [int(round(i)) for i in y_score]
+
+    temp_df = pd.DataFrame()
+
+    temp_df["Model"] = [title]
+    temp_df["Train AUC Scores"] = [AUC_scores]
+    temp_df["Test AUC"] = roc_auc_score(y_test, y_score)
+    temp_df["Test Recall (1)"] = recall_score(y_test, y_score_flag, pos_label=1)
+    temp_df["Test Recall (0)"] = recall_score(y_test, y_score_flag, pos_label=0)
+    temp_df["Confusion Matrix"] = [confusion_matrix(y_test, y_score_flag)]
+
+    return pd.concat([df,temp_df])
