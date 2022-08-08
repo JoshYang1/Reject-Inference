@@ -146,3 +146,18 @@ def AppendResults(df,title, AUC_scores, y_test, y_score) :
     temp_df["Confusion Matrix"] = [confusion_matrix(y_test, y_score_flag)]
 
     return pd.concat([df,temp_df])
+
+def splitCount(column):
+
+    neg, pos = np.bincount(column)
+    total = neg + pos
+    rate = 100 * pos / total
+
+    return total, pos, rate
+
+def RejectPreprocessing(df, num_cols, cat_cols, prefix, scaler) :
+    df = pd.get_dummies(df, prefix=prefix, columns=cat_cols, drop_first=False)
+    df[num_cols] = df[num_cols].fillna(df[num_cols].mean())
+    df[num_cols] = scaler.transform(df[num_cols])
+    
+    return df
