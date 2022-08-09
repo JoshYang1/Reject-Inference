@@ -134,16 +134,16 @@ def AcceptedLoansSplit(train, test):
 
 def AppendResults(df,title, AUC_scores, y_test, y_score) :
 
-    y_score_flag = [int(round(i)) for i in y_score]
+    # y_score_flag = [int(round(i)) for i in y_score]
 
     temp_df = pd.DataFrame()
 
     temp_df["Model"] = [title]
     temp_df["Train AUC Scores"] = [AUC_scores]
     temp_df["Test AUC"] = roc_auc_score(y_test, y_score)
-    temp_df["Test Recall (1)"] = recall_score(y_test, y_score_flag, pos_label=1)
-    temp_df["Test Recall (0)"] = recall_score(y_test, y_score_flag, pos_label=0)
-    temp_df["Confusion Matrix"] = [confusion_matrix(y_test, y_score_flag)]
+    temp_df["Test Recall (1)"] = recall_score(y_test, y_score, pos_label=1)
+    temp_df["Test Recall (0)"] = recall_score(y_test, y_score, pos_label=0)
+    temp_df["Confusion Matrix"] = [confusion_matrix(y_test, y_score)]
 
     return pd.concat([df,temp_df])
 
